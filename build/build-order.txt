@@ -28,4 +28,3 @@
 ..\src\bindingHandlers\ng-cell.js
 ..\src\bindingHandlers\ng-header-row.js
 ..\src\bindingHandlers\ng-header-cell.js
-..\src\init.js

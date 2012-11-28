@@ -16,7 +16,7 @@ ng.Row = function (entity, config, selectionService) {
     if (self.entity[SELECTED_PROP] === undefined) {
         self.entity[SELECTED_PROP] = false;
     }
-    self.selected = false;
+    self.selected = ko.observable(false);
     self.toggleSelected = function (event) {
         if (!canSelectRows) {
             return true;

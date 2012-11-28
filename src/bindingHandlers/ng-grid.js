@@ -1,38 +1,38 @@
 ﻿ko.bindingHandlers['ngGrid'] = (function () {
     return {
         'init': function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var $element = $(iElement);
-            var options = $scope.$eval(iAttrs.ngGrid);
-            options.gridDim = new ng.Dimension({ outerHeight: $($element).height(), outerWidth: $($element).width() });
-            var grid = new ng.Grid($scope, options, sortService, domUtilityService);
-            var htmlText = ng.defaultGridTemplate(grid.config);
-            gridService.StoreGrid($element, grid);
-            grid.footerController = new ng.Footer($scope, grid);
+            var options = valueAccessor();
+            options.gridDim = new ng.Dimension({ outerHeight: element.height(), outerWidth: $element.width() });
+            var grid = new ng.Grid(options);
+            var gridElem = $(ng.defaultGridTemplate());
+            ng.gridService.StoreGrid(element, grid);
+            grid.footerController = new ng.Footer(grid);
             // if it is a string we can watch for data changes. otherwise you won't be able to update the grid data
-            if (typeof options.data == "string") {
-                $scope.$parent.$watch(options.data, function (a) {
-                    if (!a) return;
-                    grid.sortedData = $.extend(true, [], a);
-                    grid.searchProvider.evalFilter();
-                    grid.configureColumnWidths();
-                    grid.refreshDomSizes();
-                }, options.watchDataItems);
-            }
+            options.data.subscribe(function (a) {
+                if (!a) return;
+                grid.sortedData = $.extend(true, [], a);
+                grid.searchProvider.evalFilter();
+                grid.configureColumnWidths();
+                grid.refreshDomSizes();
+            }, options.watchDataItems);
             //set the right styling on the container
-            $element.addClass("ngGrid")
-                .addClass("ui-widget")
-                .addClass(grid.gridId.toString());
+            element.addClass("ngGrid")
+                   .addClass("ui-widget")
+                   .addClass(grid.gridId.toString());
             //call update on the grid, which will refresh the dome measurements asynchronously
-            iElement.append($compile(htmlText)($scope));// make sure that if any of these change, we re-fire the calc logic
+            element.append(gridElem);// make sure that if any of these change, we re-fire the calc logic
+            var footer = gridElem.find(".ngFooterPanel");
+            ko.applyBindings(grid, gridElem);
+            ko.applyBindings(grid.footerController, footer);
             //walk the element's graph and the correct properties on the grid
-            domUtilityService.AssignGridContainers($element, grid);
+            domUtilityService.AssignGridContainers(element, grid);
             grid.configureColumnWidths();
             //now use the manager to assign the event handlers
-            gridService.AssignGridEventHandlers($scope, grid);
-            grid.aggregateProvider = new ng.AggregateProvider(grid, $scope.$new(), gridService, domUtilityService);
+            gridService.AssignGridEventHandlers(grid);
+            grid.aggregateProvider = new ng.AggregateProvider(grid);
             //initialize plugins.
             angular.forEach(options.plugins, function (p) {
-                p.init($scope.$new(), grid, { GridService: gridService, SortService: sortService, DomUtilityService: domUtilityService });
+                p.init(grid);
             });
         }
     };

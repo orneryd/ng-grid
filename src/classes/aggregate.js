@@ -10,7 +10,7 @@ ng.Aggregate = function (aggEntity, rowFactory) {
     self.index = 0;
     self.offsetTop = 0;
     self.entity = aggEntity;
-    self.label = aggEntity.gLabel;
+    self.label = ko.observable(aggEntity.gLabel);
     self.field = aggEntity.gField;
     self.depth = aggEntity.gDepth;
     self.parent = aggEntity.parent;
@@ -53,10 +53,10 @@ ng.Aggregate = function (aggEntity, rowFactory) {
         });
         rowFactory.renderedChange();
     };
-    self.aggClass = function() {
+    self.aggClass = ko.computed(function() {
         return self.collapsed ? "ngAggArrowCollapsed" : "ngAggArrowExpanded";
-    };
-    self.totalChildren = function() {
+    });
+    self.totalChildren = ko.computed(function() {
         if (self.aggChildren.length > 0) {
             var i = 0;
             var recurse = function (cur) {
@@ -73,5 +73,5 @@ ng.Aggregate = function (aggEntity, rowFactory) {
         } else {
             return self.children.length;
         }
-    };
+    });
 }; 

@@ -53,7 +53,7 @@ ng.domUtilityService = {
         grid.adjustScrollTop(scrollTop, true); //ensure that the user stays scrolled where they were
     },
     BuildStyles: function(grid) {
-        var rowHeight = (grid.config.rowHeight - grid.elementDims.rowHdiff),
+        var rowHeight = grid.config.rowHeight,
             headerRowHeight = grid.config.headerRowHeight,
             $style = grid.$styleSheet,
             gridId = grid.gridId,

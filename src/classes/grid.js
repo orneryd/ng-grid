@@ -21,25 +21,25 @@ ng.Grid = function (options) {
             selectWithCheckboxOnly: false,
             useExternalSorting: false,
             sortInfo: undefined, // similar to filterInfo
-            multiSelect: true,
+            multiSelect: ko.observable(true),
             tabIndex: -1,
             disableTextSelection: false,
-            enableColumnResize: true,
+            enableColumnResize: ko.observable(true),
             maintainColumnRatios: undefined,
-            enableSorting: true,
+            enableSorting:ko.observable(true),
             beforeSelectionChange: function () { return true;},
             afterSelectionChange: function () { return true;},
             rowTemplate: undefined,
             headerRowTemplate: undefined,
-			jqueryUITheme: false,
-			jqueryUIDraggable: false,
+            jqueryUITheme: ko.observable(false),
+            jqueryUIDraggable: ko.observable(false),
             plugins: [],
             keepLastSelected: true,
             groups: [],
-            showGroupPanel: false,
-            enableRowReordering: false,
-            showColumnMenu: true,
-            showFilter: true,
+            showGroupPanel: ko.observable(false),
+            enableRowReordering: ko.observable(false),
+            showColumnMenu: ko.observable(true),
+            showFilter: ko.observable(true),
             filterOptions: {
                 filterText: "",
                 useExternalFilter: false,
@@ -47,10 +47,10 @@ ng.Grid = function (options) {
             //Paging 
             enablePaging: false,
             pagingOptions: {
-                pageSizes: [250, 500, 1000], //page Sizes
-                pageSize: 250, //Size of Paging data
-                totalServerItems: undefined, //how many items are on the server (for paging)
-                currentPage: 1, //what page they are currently on
+                pageSizes: ko.observableArray([250, 500, 1000]), //page Sizes
+                pageSize: ko.observable(250), //Size of Paging data
+                totalServerItems: ko.observable(undefined), //how many items are on the server (for paging)
+                currentPage: ko.observable(1), //what page they are currently on
             },
         },
         self = this;
@@ -84,16 +84,10 @@ ng.Grid = function (options) {
     self.elementDims = {
         scrollW: 0,
         scrollH: 0,
-        cellHdiff: 0,
-        cellWdiff: 0,
-        rowWdiff: 0,
-        rowHdiff: 0,
         rowIndexCellW: 25,
         rowSelectedCellW: 25,
         rootMaxW: 0,
         rootMaxH: 0,
-        rootMinW: 0,
-        rootMinH: 0
     };
     // Set new default footer height if not overridden, and multi select is disabled
     if (self.config.footerRowHeight === defaults.footerRowHeight
@@ -335,14 +329,14 @@ ng.Grid = function (options) {
     self.renderedRows = [];
     self.headerRow = null;
     self.rowHeight = self.config.rowHeight;
-	self.jqueryUITheme = self.config.jqueryUITheme;
+	self.jqueryUITheme = ko.observable(self.config.jqueryUITheme);
     self.footer = null;
     self.selectedItems = self.config.selectedItems;
     self.multiSelect = self.config.multiSelect;
     self.footerVisible = self.config.footerVisible;
     self.showColumnMenu = self.config.showColumnMenu;
     self.showMenu = false;
-    self.configGroups = [];
+    self.configGroups = ko.observableArray([]);
 
     //Paging
     self.enablePaging = self.config.enablePaging;
@@ -363,11 +357,16 @@ ng.Grid = function (options) {
         self.headerRowTemplate = ng.defaultHeaderRowTemplate();
     }
     //scope funcs
-    self.visibleColumns = function () {
+    self.visibleColumns = ko.computed(function () {
         return self.columns.filter(function (col) {
             return col.visible;
         });
-    };
+    });
+    self.nonAggColumns = ko.computed(function () {
+        return self.columns.filter(function (col) {
+            return !col.isAggCol;
+        });
+    });
     self.toggleShowMenu = function () {
         self.showMenu = !self.showMenu;
     };

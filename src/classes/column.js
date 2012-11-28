@@ -8,11 +8,11 @@
     self.minWidth = !colDef.minWidth ? 50 : colDef.minWidth;
     self.maxWidth = !colDef.maxWidth ? 9000 : colDef.maxWidth;
     self.headerRowHeight = config.headerRowHeight;
-    self.displayName = colDef.displayName || colDef.field;
+    self.displayName = ko.observable(colDef.displayName || colDef.field);
     self.index = config.index;
     self.isAggCol = config.isAggCol;
-    self.cellClass = colDef.cellClass;
-    self.cellFilter = colDef.cellFilter ? "|" + colDef.cellFilter : "";
+    self.cellClass = ko.observable(colDef.cellClass);
+    self.cellFilter = colDef.cellFilter;
     self.field = colDef.field;
     self.aggLabelFilter = colDef.cellFilter || colDef.aggLabelFilter;
     self.visible = ng.utils.isNullOrUndefined(colDef.visible) || colDef.visible;
@@ -20,15 +20,24 @@
     self.resizable = ng.utils.isNullOrUndefined(colDef.resizable) || colDef.resizable;
     self.sortDirection = undefined;
     self.sortingAlgorithm = colDef.sortFn;
-    self.headerClass = colDef.headerClass;
+    self.headerClass = ko.observable(colDef.headerClass);
     self.headerCellTemplate = colDef.headerCellTemplate || ng.defaultHeaderCellTemplate();
     self.cellTemplate = colDef.cellTemplate || ng.defaultCellTemplate().replace(CUSTOM_FILTERS, self.cellFilter);
-    if (colDef.cellTemplate && URI_REGEXP.test(colDef.cellTemplate)) {
+    self.getProperty = function (row) {
+        var ret;
+        if (self.cellFilter) {
+            ret = self.cellFilter(row.getProperty(self.field));
+        } else {
+            ret = row.getProperty(self.field);
+        }
+        return ret;
+    };
+    if (colDef.cellTemplate && !TEMPLATE_REGEXP.test(colDef.cellTemplate)) {
         ng.utils.getTemplates(colDef.cellTemplate, function(t) {
             self.cellTemplate = t;
         });
     } 
-    if (colDef.headerCellTemplate && URI_REGEXP.test(colDef.headerCellTemplate)) {
+    if (colDef.headerCellTemplate && !TEMPLATE_REGEXP.test(colDef.headerCellTemplate)) {
         self.headerCellTemplate = ng.utils.getTemplates(colDef.headerCellTemplate, function(t) {
             self.headerCellTemplate = t;
         });
@@ -42,9 +51,9 @@
     self.showSortButtonDown = function () {
         return self.sortable ? self.sortDirection === ASC : self.sortable;
     };     
-    self.noSortVisible = function () {
+    self.noSortVisible = ko.computed(function () {
         return !self.sortDirection;
-    };
+    });
     self.sort = function () {
         if (!self.sortable) {
             return; // column sorting is disabled, do nothing
