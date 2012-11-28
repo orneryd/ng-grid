@@ -1,3 +1,4 @@
+/// <reference path="../../lib/knockout-2.2.0.js" />
 /// <reference path="../../lib/jquery-1.8.2.min" />
 /// <reference path="../../lib/angular.js" />
 /// <reference path="../constants.js"/>
@@ -29,18 +30,18 @@ ng.Aggregate = function (aggEntity, rowFactory) {
         self.notifyChildren();
     };
     self.notifyChildren = function() {
-        angular.forEach(self.aggChildren, function(child) {
+        ko.utils.forEach(self.aggChildren, function(child) {
             child.entity[NG_HIDDEN] = self.collapsed;
             if (self.collapsed) {
                 child.setExpand(self.collapsed);
             }
         });
-        angular.forEach(self.children, function(child) {
+        ko.utils.forEach(self.children, function (child) {
             child[NG_HIDDEN] = self.collapsed;
         });
         rowFactory.rowCache = [];
         var foundMyself = false;
-        angular.forEach(rowFactory.aggCache, function(agg, i) {
+        ko.utils.forEach(rowFactory.aggCache, function (agg, i) {
             if (foundMyself) {
                 var offset = (30 * self.children.length);
                 agg.offsetTop = self.collapsed ? agg.offsetTop - offset : agg.offsetTop + offset;
@@ -60,7 +61,7 @@ ng.Aggregate = function (aggEntity, rowFactory) {
             var i = 0;
             var recurse = function (cur) {
                 if (cur.aggChildren.length > 0) {
-                    angular.forEach(cur.aggChildren, function (a) {
+                    ko.utils.forEach(cur.aggChildren, function (a) {
                         recurse(a);
                     });
                 } else {

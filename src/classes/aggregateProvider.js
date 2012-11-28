@@ -1,4 +1,6 @@
-﻿ng.AggregateProvider = function (grid, $scope, gridService,domUtilityService) {
+﻿/// <reference path="../namespace.js" />
+/// <reference path="../../lib/knockout-2.2.0.js" />
+ng.AggregateProvider = function (grid, gridService) {
     var self = this;
     // The init method gets called during the ng-grid directive execution.
     self.colToMove = undefined;
@@ -20,8 +22,7 @@
 				grid.$viewport.on('mousedown', self.onRowMouseDown).on('dragover', self.dragOver).on('drop', self.onRowDrop);
 			}
 		}
-		$scope.$watch('columns', self.setDraggables, true);	
-		
+        grid.columns.subscribe(self.setDraggables);
     };
     self.dragOver = function(evt) {
         evt.preventDefault();
@@ -65,7 +66,7 @@
         var groupItem = $(event.target);
         // Get the scope from the header container
 		if(groupItem[0].className != 'ngRemoveGroup'){
-			var groupItemScope = angular.element(groupItem).scope();
+		    var groupItemScope = ko.dataFor(groupItem);
 			if (groupItemScope) {
 				// set draggable events
 				if(!grid.config.jqueryUIDraggable){
@@ -89,37 +90,36 @@
             // Get the closest header to where we dropped
             groupContainer = $(event.target).closest('.ngGroupElement'); // Get the scope from the header.
             if (groupContainer.context.className == 'ngGroupPanel') {
-                $scope.configGroups.splice(self.groupToMove.index, 1);
-                $scope.configGroups.push(self.groupToMove.groupName);
+                grid.configGroups.splice(self.groupToMove.index, 1);
+                grid.configGroups.push(self.groupToMove.groupName);
             } else {
-                groupScope = angular.element(groupContainer).scope();
+                groupScope = ko.dataFor(groupContainer);
                 if (groupScope) {
                     // If we have the same column, do nothing.
                     if (self.groupToMove.index != groupScope.$index){
 						// Splice the columns
-						$scope.configGroups.splice(self.groupToMove.index, 1);
-						$scope.configGroups.splice(groupScope.$index, 0, self.groupToMove.groupName);
+                        grid.configGroups.splice(self.groupToMove.index, 1);
+                        grid.configGroups.splice(groupScope.$index, 0, self.groupToMove.groupName);
 					}
                 }
             }			
 			self.groupToMove = undefined;
         } else {	
 			self.onHeaderDragStop();
-            if ($scope.configGroups.indexOf(self.colToMove.col) == -1) {
+			if (grid.configGroups.indexOf(self.colToMove.col) == -1) {
                 groupContainer = $(event.target).closest('.ngGroupElement'); // Get the scope from the header.
 				if (groupContainer.context.className == 'ngGroupPanel' || groupContainer.context.className == 'ngGroupPanelDescription') {
-					$scope.configGroups.push(self.colToMove.col);
+				    grid.configGroups.push(self.colToMove.col);
 				} else {
-				    groupScope = angular.element(groupContainer).scope();
+				    groupScope = ko.dataFor(groupContainer);
 				    if (groupScope) {
 						// Splice the columns
-						$scope.configGroups.splice(groupScope.$index + 1, 0, self.colToMove.col);
+				        grid.configGroups.splice(groupScope.$index + 1, 0, self.colToMove.col);
 					}
 				}	
             }			
 			self.colToMove = undefined;
         }
-        $scope.$apply();
     };
 	
     //Header functions
@@ -127,7 +127,7 @@
         // Get the closest header container from where we clicked.
         var headerContainer = $(event.target).closest('.ngHeaderSortColumn');
         // Get the scope from the header container
-        var headerScope = angular.element(headerContainer).scope();
+        var headerScope = ko.dataFor(headerContainer);
         if (headerScope) {
             // Save the column for later.
             self.colToMove = { header: headerContainer, col: headerScope.col };
@@ -154,16 +154,16 @@
         // Get the closest header to where we dropped
         var headerContainer = $(event.target).closest('.ngHeaderSortColumn');
         // Get the scope from the header.
-        var headerScope = angular.element(headerContainer).scope();
+        var headerScope = ko.dataFor(headerContainer);
         if (headerScope) {
             // If we have the same column, do nothing.
             if (self.colToMove.col == headerScope.col) return;
             // Splice the columns
-            $scope.columns.splice(self.colToMove.col.index, 1);
-            $scope.columns.splice(headerScope.col.index, 0, self.colToMove.col);
+            grid.columns.splice(self.colToMove.col.index, 1);
+            grid.columns.splice(headerScope.col.index, 0, self.colToMove.col);
             grid.fixColumnIndexes();
             // Finally, rebuild the CSS styles.
-            domUtilityService.BuildStyles($scope,grid,true);
+            ng.domUtilityService.BuildStyles(grid);
             // clear out the colToMove object
             self.colToMove = undefined;
         }
@@ -174,7 +174,7 @@
         // Get the closest row element from where we clicked.
         var targetRow = $(event.target).closest('.ngRow');
         // Get the scope from the row element
-        var rowScope = angular.element(targetRow).scope();
+        var rowScope = ko.dataFor(targetRow);
         if (rowScope) {
             // set draggable events
             targetRow.attr('draggable', 'true');
@@ -187,7 +187,7 @@
         // Get the closest row to where we dropped
         var targetRow = $(event.target).closest('.ngRow');
         // Get the scope from the row element.
-        var rowScope = angular.element(targetRow).scope();
+        var rowScope = ko.dataFor(targetRow);
         if (rowScope) {
             // If we have the same Row, do nothing.
             var prevRow = gridService.eventStorage.rowToMove;
