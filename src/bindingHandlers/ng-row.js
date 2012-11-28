@@ -1,26 +1,26 @@
-﻿﻿/// <reference path="../templates/aggregateTemplate.js" />
+﻿/// <reference path="../../lib/knockout-2.2.0.js" />
+/// <reference path="../constants.js" />
+﻿/// <reference path="../templates/aggregateTemplate.js" />
 /// <reference path="../namespace.js" />
-ngGridDirectives.directive('ngRow', ['$compile', function ($compile) {
-    var ngRow = {
-        scope: false,
-        compile: function () {
-            return {
-                pre: function ($scope, iElement) {
-                    var html;
-                    if ($scope.row.isAggRow) {
-                        html = ng.aggregateTemplate();
-                        if ($scope.row.aggLabelFilter) {
-                            html = html.replace(CUSTOM_FILTERS, '| ' + $scope.row.aggLabelFilter);
-                        } else {
-                            html = html.replace(CUSTOM_FILTERS, "");
-                        }
-                    } else {
-                        html = $scope.$parent.rowTemplate;
-                    }
-                    iElement.append($compile(html)($scope));
+ko.bindingHandlers['ngRow'] = (function () {
+    return {
+        'init': function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var row = valueAccessor();
+            var grid = viewModel.$parent;
+            var html;
+            if (row.isAggRow) {
+                html = ng.aggregateTemplate();
+                if (row.aggLabelFilter) {
+                    html = html.replace(CUSTOM_FILTERS, '| ' + row.aggLabelFilter);
+                } else {
+                    html = html.replace(CUSTOM_FILTERS, "");
                 }
-            };
+            } else {
+                html = grid.rowTemplate;
+            }
+            var rowElem = $(document.createElement(html));
+            ko.applyBindings(row, rowElem);
+            element.append(rowElem);
         }
     };
-    return ngRow;
-}]);
+}());

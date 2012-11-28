@@ -1,14 +1,12 @@
 ﻿/// <reference path="../../lib/jquery-1.8.2.min" />
-/// <reference path="../../lib/angular.js" />
 /// <reference path="../constants.js"/>
 /// <reference path="../namespace.js" />
 /// <reference path="../navigation.js"/>
 /// <reference path="../utils.js"/>
-ngGridServices.factory('GridService', ['DomUtilityService', function (domUtilityService) {
-    var gridService = {};
-    gridService.gridCache = {};
-    gridService.eventStorage = {};
-    gridService.getIndexOfCache = function() {
+ng.gridService = {
+    gridCache: {},
+    eventStorage: {},
+    getIndexOfCache: function() {
         var indx = -1;   
         for (var grid in gridService.gridCache) {
             indx++;
@@ -16,30 +14,26 @@ ngGridServices.factory('GridService', ['DomUtilityService', function (domUtility
             return indx;
         }
         return indx;
-    };
-    gridService.StoreGrid = function (element, grid) {
+    },
+    StoreGrid: function (element, grid) {
         gridService.gridCache[grid.gridId] = grid;
         element[GRID_KEY] = grid.gridId;
-    };
-        
-    gridService.RemoveGrid = function(gridId) {
+    },
+    RemoveGrid: function(gridId) {
         delete gridService.gridCache[gridId];
-    };
-    
-    gridService.GetGrid = function (element) {
+    },
+    GetGrid: function (element) {
         var grid;
         if (element[GRID_KEY]) {
             grid = gridService.gridCache[element[GRID_KEY]];
             return grid;
         }
         return false;
-    };
-    
-    gridService.ClearGridCache = function () {
+    },
+    ClearGridCache : function () {
         gridService.gridCache = {};
-    };
-    
-    gridService.AssignGridEventHandlers = function ($scope, grid) {
+    },
+    AssignGridEventHandlers: function ($scope, grid) {
         grid.$viewport.scroll(function (e) {
             var scrollLeft = e.target.scrollLeft,
             scrollTop = e.target.scrollTop;
@@ -61,12 +55,10 @@ ngGridServices.factory('GridService', ['DomUtilityService', function (domUtility
             grid.$viewport.attr('tabIndex', grid.config.tabIndex);
         }
         $(window).resize(function () {
-            domUtilityService.UpdateGridLayout(grid);
+            ng.domUtilityService.UpdateGridLayout(grid);
             if (grid.config.maintainColumnRatios) {
                 grid.configureColumnWidths();
             }
-		});
-    };
-	
-    return gridService;
-}]);
+        });
+    },
+};

@@ -1,14 +1,11 @@
-﻿ngGridDirectives.directive('ngCell', ['$compile', function($compile) {
-    var ngCell = {
-        scope: false,
-        compile: function () {
-            return {
-                pre: function ($scope, iElement) {
-                    var html = $scope.col.cellTemplate;
-                    iElement.append($compile(html)($scope));
-                }
-            };
+﻿/// <reference path="../../lib/knockout-2.2.0.js" />
+ko.bindingHandlers['ngCell'] = (function () {
+    return {
+        'init': function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var col = valueAccessor();
+            var cell = $(document.createElement(col.cellTemplate));
+            ko.applyBindings(viewModel, cell);
+            element.append(cell);
         }
     };
-    return ngCell;
-}]);
+}());

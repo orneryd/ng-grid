@@ -4,7 +4,7 @@
 /// <reference path="../src/namespace.js" />
 /// <reference path="../src/utils.jsjs"/>
 //set event binding on the grid so we can select using the up/down keys
-ng.moveSelectionHandler = function ($scope, grid, evt) {
+ng.moveSelectionHandler = function (grid, evt) {
     // null checks 
     if (grid === null || grid === undefined) return true;
     if (grid.config.selectedItems === undefined) return true;
@@ -12,12 +12,9 @@ ng.moveSelectionHandler = function ($scope, grid, evt) {
     // detect which direction for arrow keys to navigate the grid
     var offset = (charCode == 38 ? -1 : (charCode == 40 ? 1 : null));
     if (!offset) return true;
-    var items = $scope.renderedRows;
+    var items = grid.renderedRows;
     var index = items.indexOf(grid.selectionService.lastClickedRow) + offset;
     if (index == -1) return true;
-    grid.selectionService.ChangeSelection($scope.renderedRows[index], evt);
-    if (!$scope.$$phase) {
-        $scope.$apply();
-    }
+    grid.selectionService.ChangeSelection(grid.renderedRows[index], evt);
     return false;
 }; 

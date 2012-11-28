@@ -1,29 +1,29 @@
-﻿ng.StyleProvider = function($scope, grid, domUtilityService) {
-    $scope.topPanelStyle = function() {
+﻿ng.StyleProvider = function(grid) {
+    grid.topPanelStyle = function() {
         return { "height": $scope.topPanelHeight() + "px" };
     };
-    $scope.headerCellStyle = function(col) {
+    grid.headerCellStyle = function(col) {
         return { "height": col.headerRowHeight + "px" };
     };
-    $scope.rowStyle = function(row) {
+    grid.rowStyle = function(row) {
         return { "top": row.offsetTop + "px", "height": $scope.rowHeight + "px" };
     };
-    $scope.canvasStyle = function() {
+    grid.canvasStyle = function() {
         return { "height": grid.maxCanvasHt.toString() + "px" };
     };
-    $scope.headerScrollerStyle = function() {
+    grid.headerScrollerStyle = function() {
         return { "height": grid.config.headerRowHeight + "px" };
     };
-    $scope.topPanelStyle = function() {
+    grid.topPanelStyle = function() {
         return { "width": grid.rootDim.outerWidth + "px", "height": $scope.topPanelHeight() + "px" };
     };
-    $scope.headerStyle = function() {
-        return { "width": (grid.rootDim.outerWidth - domUtilityService.ScrollW) + "px", "height": grid.config.headerRowHeight + "px" };
+    grid.headerStyle = function() {
+        return { "width": (grid.rootDim.outerWidth - ng.domUtilityService.ScrollW) + "px", "height": grid.config.headerRowHeight + "px" };
     };
-    $scope.viewportStyle = function() {
+    grid.viewportStyle = function() {
         return { "width": grid.rootDim.outerWidth + "px", "height": $scope.viewportDimHeight() + "px" };
     };
-    $scope.footerStyle = function() {
+    grid.footerStyle = function() {
         return { "width": grid.rootDim.outerWidth + "px", "height": grid.config.footerRowHeight + "px" };
     };
 };

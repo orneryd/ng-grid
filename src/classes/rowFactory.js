@@ -1,8 +1,9 @@
-﻿/// <reference path="../utils.js" />
+﻿/// <reference path="../../lib/knockout-2.2.0.js" />
+/// <reference path="../utils.js" />
 /// <reference path="../namespace.js" />
 /// <reference path="../../lib/angular.js" />
 /// <reference path="../constants.js" />
-ng.RowFactory = function(grid, $scope) {
+ng.RowFactory = function(grid) {
     var self = this;
     // we cache rows when they are built, and then blow the cache away when sorting
     self.rowCache = [];
@@ -85,7 +86,7 @@ ng.RowFactory = function(grid, $scope) {
         var dataArray = self.parsedData.filter(function(e) {
             return e[NG_HIDDEN] === false;
         }).slice(self.renderedRange.topRow, self.renderedRange.bottomRow);
-        angular.forEach(dataArray, function(item, indx) {
+        ko.utils.forEach(dataArray, function(item, indx) {
             var row;
             if (item.isAggRow) {
                 row = self.buildAggregateRow(item, self.renderedRange.topRow + indx);
@@ -102,7 +103,7 @@ ng.RowFactory = function(grid, $scope) {
     self.renderedChangeNoGroups = function() {
         var rowArr = [];
         var dataArr = grid.filteredData.slice(self.renderedRange.topRow, self.renderedRange.bottomRow);
-        angular.forEach(dataArr, function(item, i) {
+        ko.utils.forEach(dataArr, function(item, i) {
             var row = self.buildEntityRow(item, self.renderedRange.topRow + i);
             //add the row to our return array
             rowArr.push(row);
@@ -113,7 +114,7 @@ ng.RowFactory = function(grid, $scope) {
     //magical recursion. it works. I swear it. I figured it out in the shower one day.
     self.parseGroupData = function(g) {
         if (g.values) {
-            angular.forEach(g.values, function(item) {
+            ko.utils.forEach(g.values, function(item) {
                 // get the last parent in the array because that's where our children want to be
                 self.parentCache[self.parentCache.length - 1].children.push(item);
                 //add the row to our return array
@@ -163,12 +164,12 @@ ng.RowFactory = function(grid, $scope) {
         // Here we set the onmousedown event handler to the header container.
         var data = grid.filteredData;
         var maxDepth = groups.length;
-        var cols = $scope.columns;
+        var cols = grid.columns;
 
-        angular.forEach(data, function(item) {
+        ko.utils.forEach(data, function(item) {
             item[NG_HIDDEN] = true;
             var ptr = self.groupedData;
-            angular.forEach(groups, function(group, depth) {
+            ko.utils.forEach(groups, function(group, depth) {
                 if (!cols[depth].isAggCol && depth <= maxDepth) {
                     cols.splice(item.gDepth, 0, new ng.Column({
                         colDef: {

@@ -1,15 +1,10 @@
-﻿ngGridDirectives.directive('ngHeaderCell', ['$compile', function ($compile) {
-    var ngHeaderCell = {
-        scope: false,
-        compile: function () {
-            return {
-                pre: function ($scope, iElement) {
-                    var html = $scope.col.headerCellTemplate;
-                    iElement.html(html);
-                    $compile(iElement.children())($scope);
-                }
-            };
+﻿ko.bindingHandlers['ngHeaderCell'] = (function () {
+    return {
+        'init': function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var col = valueAccessor();
+            var headerCell = $(document.createElement(col.headerCellTemplate));
+            ko.applyBindings(viewModel, headerCell);
+            element.append(headerCell);
         }
     };
-    return ngHeaderCell;
-}]);
+}());
