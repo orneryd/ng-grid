@@ -1,2 +1,2 @@
 <!--ng.defaultHeaderRowTemplate-->
-<div ng-repeat="col in visibleColumns()" class="ngHeaderCell col{{$index}}" ng-header-cell><div>
+<div data-bind="ngHeaderCell: $data, foreach: col in $root.visibleColumns, css: 'col' + $index" class="ngHeaderCell"><div>

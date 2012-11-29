@@ -1,7 +1,7 @@
 <!--ng.defaultHeaderCellTemplate-->
-<div ng-click="col.sort()" class="ngHeaderSortColumn {{col.headerClass}}" ng-class="{ 'ngSorted': !noSortVisible }">
-    <div class="ngHeaderText colt{{$index}}">{{col.displayName}}</div>
-    <div class="ngSortButtonDown" ng-show="col.showSortButtonDown()"></div>
-    <div class="ngSortButtonUp" ng-show="col.showSortButtonUp()"></div>
+<div data-bind="click: $data.sort(), css: { 'ngSorted': !noSortVisible, $data.headerClass }" class="ngHeaderSortColumn {{}}">
+    <div data-bind="css: 'colt' + $index, html: $data.displayName" class="ngHeaderText"></div>
+    <div class="ngSortButtonDown" ng-show="$data.showSortButtonDown()"></div>
+    <div class="ngSortButtonUp" ng-show="$data.showSortButtonUp()"></div>
 </div>
-<div ng-show="col.resizable" class="ngHeaderGrip" ng-click="col.gripClick($event)" ng-mousedown="col.gripOnMouseDown($event)"></div>
+<div data-bind="visible: col.resizable, click: $data.gripClick($event), event: { onmousedown: $data.gripOnMouseDown($event) }" class="ngHeaderGrip" ></div>
