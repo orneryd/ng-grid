@@ -1,4 +1,6 @@
-#ngGrid : An Angular DataGrid#
+#ng-grid : An Angular DataGrid#
+#We are now part of angular-ui. Please look upstream for the latest code and for posting issues. 
+https://github.com/angular-ui/ng-grid
 
 __Contributors:__
 
